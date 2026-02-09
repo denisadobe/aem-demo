@@ -1,0 +1,114 @@
+{
+  "definitions": [
+    {
+      "title": "News List",
+      "id": "news-list",
+      "plugins": {
+        "xwalk": {
+          "page": {
+            "resourceType": "core/franklin/components/block/v1/block",
+            "template": {
+              "name": "News List",
+              "model": "news-list"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "models": [
+    {
+      "id": "news-list",
+      "fields": [
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "queryUrl",
+          "label": "Query URL"
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "endpoint",
+          "label": "Endpoint"
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "persistedQuery",
+          "label": "Persisted Query"
+        },
+        {
+          "component": "text",
+          "valueType": "number",
+          "name": "limit",
+          "label": "Limit",
+          "value": "6"
+        },
+        {
+          "component": "select",
+          "valueType": "string",
+          "name": "variant",
+          "label": "Variant",
+          "options": [
+            {
+              "name": "Standard",
+              "value": "standard"
+            },
+            {
+              "name": "Compact",
+              "value": "compact"
+            },
+            {
+              "name": "Featured",
+              "value": "featured"
+            }
+          ]
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "detailBasePath",
+          "label": "Detail Base Path",
+          "value": "/noticias"
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "showImage",
+          "label": "Show Image",
+          "value": "true"
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "showExcerpt",
+          "label": "Show Excerpt",
+          "value": "true"
+        },
+        {
+          "component": "text",
+          "valueType": "number",
+          "name": "excerptLength",
+          "label": "Excerpt Length",
+          "value": "120"
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "ctaLabel",
+          "label": "CTA Label",
+          "value": "Ler mais"
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "locale",
+          "label": "Locale",
+          "value": "pt-BR"
+        }
+      ]
+    }
+  ],
+  "filters": []
+}
