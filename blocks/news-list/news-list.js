@@ -5,6 +5,7 @@ import {
 
 const DEFAULT_LIMIT = 6;
 const DEFAULT_VARIANT = 'standard';
+const GRAPHQL_NEWS_LIST_PATH = '/graphql/execute.json/aem-demo/news-list';
 
 function getConfigValue(config, ...keys) {
   return keys.find((key) => key in config) ? config[keys.find((key) => key in config)] : undefined;
@@ -130,19 +131,32 @@ function normalizeArticle(item) {
 }
 
 function buildRequestUrl(config) {
-  const queryUrl = getConfigValue(config, 'queryurl', 'query-url', 'queryUrl');
-  if (queryUrl) return queryUrl;
-
-  const endpoint = getConfigValue(config, 'endpoint');
-  if (!endpoint) return null;
-
-  const persistedQuery = getConfigValue(config, 'persistedquery', 'persisted-query', 'persistedQuery');
   const limit = parsePositiveInt(getConfigValue(config, 'limit'), DEFAULT_LIMIT);
+  const folderPath = getConfigValue(
+    config,
+    'folderpath',
+    'folder-path',
+    'contentfragmentfolder',
+    'content-fragment-folder',
+    'contentFragmentFolder',
+  );
+  const tag = getConfigValue(config, 'tag');
 
-  const url = new URL(endpoint, window.location.origin);
-  if (persistedQuery) url.searchParams.set('persistedQuery', persistedQuery);
-  url.searchParams.set('limit', limit.toString());
-  return url.toString();
+  const params = [
+    ['limit', String(limit)],
+  ];
+
+  if (typeof folderPath === 'string' && folderPath.trim()) {
+    params.push(['folderPath', folderPath.trim()]);
+  }
+  if (typeof tag === 'string' && tag.trim()) {
+    params.push(['tag', tag.trim()]);
+  }
+
+  const matrixParams = params
+    .map(([name, value]) => `;${name}=${encodeURIComponent(value)}`)
+    .join('');
+  return `${GRAPHQL_NEWS_LIST_PATH}${matrixParams}`;
 }
 
 function getCardLink(basePath, slug) {
@@ -234,22 +248,15 @@ export default async function decorate(block) {
     ...readDatasetConfig(block),
   };
 
-  if (!buildRequestUrl(config)) {
-    config = {
-      ...config,
-      ...(await readResourceConfig(block)),
-    };
-  }
+  config = {
+    ...config,
+    ...(await readResourceConfig(block)),
+  };
 
   const variant = getVariant(block, config);
   block.classList.add(`news-list-${variant}`);
 
   const requestUrl = buildRequestUrl(config);
-  if (!requestUrl) {
-    renderEmptyState(block, 'Configure `queryUrl` (ou `endpoint`) para carregar noticias.');
-    return;
-  }
-
   const options = {
     showImage: parseBoolean(getConfigValue(config, 'showimage', 'show-image', 'showImage'), true),
     showExcerpt: parseBoolean(getConfigValue(config, 'showexcerpt', 'show-excerpt', 'showExcerpt'), true),

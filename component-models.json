@@ -219,22 +219,19 @@
     "id": "news-list",
     "fields": [
       {
-        "component": "text",
+        "component": "aem-content",
         "valueType": "string",
-        "name": "queryUrl",
-        "label": "Query URL"
+        "name": "folderPath",
+        "label": "Content Fragment Folder",
+        "validation": {
+          "rootPath": "/content/dam"
+        }
       },
       {
         "component": "text",
         "valueType": "string",
-        "name": "endpoint",
-        "label": "Endpoint"
-      },
-      {
-        "component": "text",
-        "valueType": "string",
-        "name": "persistedQuery",
-        "label": "Persisted Query"
+        "name": "tag",
+        "label": "Tag (optional)"
       },
       {
         "component": "text",
