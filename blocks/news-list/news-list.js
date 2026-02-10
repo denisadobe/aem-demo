@@ -21,6 +21,37 @@ function readDatasetConfig(block) {
   return datasetConfig;
 }
 
+function parseResourcePath(resource) {
+  if (!resource || typeof resource !== 'string') return '';
+  if (resource.startsWith('urn:')) {
+    const idx = resource.indexOf(':/');
+    if (idx >= 0) return resource.slice(idx + 1);
+  }
+  return resource.startsWith('/') ? resource : '';
+}
+
+async function readResourceConfig(block) {
+  const resourcePath = parseResourcePath(block.dataset.aueResource);
+  if (!resourcePath) return {};
+
+  try {
+    const response = await fetch(`${resourcePath}.json`);
+    if (!response.ok) return {};
+    const data = await response.json();
+    if (!data || typeof data !== 'object') return {};
+
+    return Object.entries(data).reduce((acc, [key, value]) => {
+      if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+        acc[key] = String(value);
+        acc[key.toLowerCase()] = String(value);
+      }
+      return acc;
+    }, {});
+  } catch {
+    return {};
+  }
+}
+
 function parseBoolean(value, fallback = true) {
   if (typeof value === 'boolean') return value;
   if (typeof value !== 'string') return fallback;
@@ -198,10 +229,17 @@ function renderEmptyState(block, message = 'Nenhuma noticia encontrada.') {
 }
 
 export default async function decorate(block) {
-  const config = {
+  let config = {
     ...readBlockConfig(block),
     ...readDatasetConfig(block),
   };
+
+  if (!buildRequestUrl(config)) {
+    config = {
+      ...config,
+      ...(await readResourceConfig(block)),
+    };
+  }
 
   const variant = getVariant(block, config);
   block.classList.add(`news-list-${variant}`);
