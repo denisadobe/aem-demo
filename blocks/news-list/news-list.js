@@ -10,6 +10,17 @@ function getConfigValue(config, ...keys) {
   return keys.find((key) => key in config) ? config[keys.find((key) => key in config)] : undefined;
 }
 
+function readDatasetConfig(block) {
+  const datasetConfig = {};
+  Object.entries(block.dataset || {}).forEach(([key, value]) => {
+    if (!value) return;
+    datasetConfig[key] = value;
+    datasetConfig[key.toLowerCase()] = value;
+    datasetConfig[key.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`)] = value;
+  });
+  return datasetConfig;
+}
+
 function parseBoolean(value, fallback = true) {
   if (typeof value === 'boolean') return value;
   if (typeof value !== 'string') return fallback;
@@ -187,7 +198,10 @@ function renderEmptyState(block, message = 'Nenhuma noticia encontrada.') {
 }
 
 export default async function decorate(block) {
-  const config = readBlockConfig(block);
+  const config = {
+    ...readBlockConfig(block),
+    ...readDatasetConfig(block),
+  };
 
   const variant = getVariant(block, config);
   block.classList.add(`news-list-${variant}`);
