@@ -63,8 +63,17 @@ function normalizeArticle(item) {
   const slug = item.slug || item.path;
   if (!title || !slug) return null;
 
-  const excerpt = item.excerpt || item.description || item.summary || '';
-  const image = item.image || item.heroImage || item.thumbnail || '';
+  const excerpt = (typeof item.excerpt === 'string' ? item.excerpt : item.excerpt?.plaintext)
+    || item.description
+    || item.summary
+    || '';
+  const image = item.image?._path
+    || item.image
+    || item.heroImage?._path
+    || item.heroImage
+    || item.thumbnail?._path
+    || item.thumbnail
+    || '';
   const imageAlt = item.imageAlt || title;
   const publishDate = item.publishDate || item.date || item.publishedAt || '';
 
